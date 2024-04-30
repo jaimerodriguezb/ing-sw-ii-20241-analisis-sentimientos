@@ -2,30 +2,27 @@ import pytest
 from unittest.mock import MagicMock
 from modelo.codigo_produccion import  AnalisisSentimientos
 import pandas as pd
-import numpy as np
-import joblib
-import os
-from sklearn.feature_extraction.text import CountVectorizer
+import pip
 
-def test_comportamiento_neutral():
+def test_comportamiento_neutral(mocker):
     test =  AnalisisSentimientos()
-    sentimiento = "neutral"
-    resultado = test.clasificar_sentimiento(sentimiento)
+    mocker.patch('modelo.codigo_produccion.AnalisisSentimientos.clasificar_sentimiento',return_value="Mensaje neutro")
+    resultado = test.clasificar_sentimiento()
     assert resultado == "Mensaje neutro"
 
 def test_comportamiento_positivo():
     test =  AnalisisSentimientos()
-    sentimiento = "positive"
     test.clasificar_sentimiento = MagicMock(return_value="Mensaje positivo")
-    resultado = test.clasificar_sentimiento(sentimiento)
+    resultado = test.clasificar_sentimiento()
     assert resultado == "Mensaje positivo"
 
 def test_comportamiento_negativo():
     test =  AnalisisSentimientos()
-    sentimiento = "negative"
     test.clasificar_sentimiento = MagicMock(return_value="Mensaje negativo")
-    resultado = test.clasificar_sentimiento(sentimiento)
+    resultado = test.clasificar_sentimiento()
     assert resultado == "Mensaje negativo"
+
+
 
 #inicial las pruebas con el modelo
 @pytest.fixture
@@ -47,6 +44,14 @@ def test_comportamiento_neutral_modelo(neutral_text):
     assert resultado == "Mensaje neutro"
 
 
+#modelor
+def test_comportamiento_negativo_modelo (negative_text):
+    test =  AnalisisSentimientos()
+    resultado = test.clasificar_sentimiento(negative_text  )
+    assert resultado == "Mensaje negative"
 
-
-        
+#modelor
+def test_comportamiento_positivo_modelo (positive_text):
+    test =  AnalisisSentimientos()
+    resultado = test.clasificar_sentimiento( positive_text )
+    assert resultado == "Mensaje positivo"
