@@ -4,8 +4,8 @@ from flask_cors import CORS
 from modelo.codigo_produccion import AnalisisSentimientos
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes and origins
-logic = AnalisisSentimientos()
+CORS(app)  
+analisis= AnalisisSentimientos()
 
 api = Api(
     app, 
@@ -13,37 +13,24 @@ api = Api(
     title='Analisis de sentimientos',
     description='Logic Gates Predictor')
 
-ns = api.namespace('logic')
+ns =api.namespace('Verificar_sentimientos')
    
 parser = api.parser()
 
 parser.add_argument(
-    'a', 
-    type=int, 
-    required=True, 
-    help='a operand', 
-    location='args')
-
-parser.add_argument(
-    'b', 
-    type=int, 
-    required=True, 
-    help='b operand', 
-    location='args')
-
-parser.add_argument(
-    'gate', 
+    'Mensaje', 
     type=str, 
     required=True, 
-    help='operator: or, and, nor, nand, xor', 
+    help='Introduccir mensaje', 
     location='args')
 
+
 resource_fields = api.model('Resource', {
-    'result': fields.Integer,
+    'result': fields.String,
 })
 
-@ns.route('/gates')
-class LogicGategApi(Resource):
+@ns.route('/Analisis')
+class sentimientos(Resource):
 
     @api.doc(parser=parser)
     @api.marshal_with(resource_fields)
@@ -51,7 +38,7 @@ class LogicGategApi(Resource):
         args = parser.parse_args()
 
         return {
-         "result": logic.logic_gate(args['a'], args['b'], args['gate'])
+         "result": analisis.clasificar_sentimiento(args['Mensaje'])
         }, 200
     
     
